@@ -22,6 +22,15 @@ export function WonderPhase({ muted, onNext }) {
           <span className="text-purple-300 font-display font-800 text-xs sm:text-sm tracking-wider uppercase">
             Phase 1: Wonder & Curiosity
           </span>
+          <button
+            type="button"
+            onClick={() => narrate(AUDIO_MAP.wonder_1, true)}
+            title="Replay narration"
+            className="ml-2 flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-900/60 hover:bg-purple-800 text-amber-300 border border-amber-400/40 text-xs font-bold shadow hover:scale-105 active:scale-95 transition cursor-pointer"
+          >
+            <span>🔊</span>
+            <span className="hidden sm:inline">Replay</span>
+          </button>
         </div>
 
         <h2 className="font-display font-900 text-purple-200 text-[clamp(1.25rem,2.8vh+0.4vw,2.2rem)] leading-tight max-w-xl shrink-0">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BgSymbols } from '../components/TopNav.jsx';
 import { AUDIO_MAP } from '../audioMap.js';
 import { MathText } from '../components/MathText.jsx';
@@ -82,17 +82,36 @@ const STORY_SLIDES = [
 export function StoryPhase({ muted, onDone, onSlideChange }) {
   const [slideIdx, setSlideIdx] = useState(0);
   const slide = STORY_SLIDES[slideIdx];
+  const onSlideChangeRef = useRef(onSlideChange);
 
   useEffect(() => {
-    if (onSlideChange) {
-      onSlideChange(slideIdx + 1, STORY_SLIDES.length);
+    onSlideChangeRef.current = onSlideChange;
+  }, [onSlideChange]);
+
+  // Notify parent of slide change
+  useEffect(() => {
+    if (onSlideChangeRef.current) {
+      onSlideChangeRef.current(slideIdx + 1, STORY_SLIDES.length);
     }
+  }, [slideIdx]);
+
+  // Play narration whenever slideIdx or muted changes
+  useEffect(() => {
     const audioData = AUDIO_MAP[slide.audioKey];
     if (audioData) {
       narrate(audioData, !muted);
     }
-    return () => stopNarration();
-  }, [slideIdx, muted, onSlideChange]);
+    return () => {
+      stopNarration();
+    };
+  }, [slideIdx, muted]);
+
+  const replayAudio = () => {
+    const audioData = AUDIO_MAP[slide.audioKey];
+    if (audioData) {
+      narrate(audioData, true);
+    }
+  };
 
   const goNext = () => {
     if (slideIdx < STORY_SLIDES.length - 1) {
@@ -133,14 +152,27 @@ export function StoryPhase({ muted, onDone, onSlideChange }) {
         {/* Right Column: Fluid Narrative, Prominent Typography & Interactive Pills */}
         <div className="md:col-span-6 flex flex-col justify-between h-full gap-3 sm:gap-4 py-1 text-left">
           <div className="flex flex-col gap-2.5 sm:gap-3.5">
-            {/* Header Tag Badge */}
-            <div className="flex items-center gap-2">
-              <span className="text-[0.7rem] sm:text-xs uppercase font-black tracking-wider bg-amber-400/15 text-amber-300 border border-amber-400/40 px-3 py-0.5 rounded-full">
-                Grade 8 Math Quest
-              </span>
-              <span className="text-purple-300/70 text-xs font-semibold">
-                Interactive Storyline
-              </span>
+            {/* Header Tag Badge & Audio Replay Button */}
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <span className="text-[0.7rem] sm:text-xs uppercase font-black tracking-wider bg-amber-400/15 text-amber-300 border border-amber-400/40 px-3 py-0.5 rounded-full">
+                  Grade 8 Math Quest
+                </span>
+                <span className="text-purple-300/70 text-xs font-semibold">
+                  Interactive Storyline
+                </span>
+              </div>
+
+              {/* Speaker Narration Replay Button */}
+              <button
+                type="button"
+                onClick={replayAudio}
+                title="Listen to slide narration"
+                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-900/70 hover:bg-purple-800 text-amber-300 border border-amber-400/50 hover:border-amber-300 text-xs font-black shadow-md hover:scale-105 active:scale-95 transition cursor-pointer"
+              >
+                <span className="text-sm">🔊</span>
+                <span className="hidden sm:inline">Replay Audio</span>
+              </button>
             </div>
 
             {/* Slide Title */}

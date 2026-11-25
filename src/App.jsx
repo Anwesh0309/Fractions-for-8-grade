@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { setMuted, stopNarration } from './audio.js';
 import { TopNav } from './components/TopNav.jsx';
 import { IntroModal } from './stages/IntroPhase.jsx';
@@ -75,6 +75,13 @@ export function App() {
     setPhase('practice-worlds');
   };
 
+  const handleStorySlideChange = useCallback((current, total) => {
+    setStorySlideInfo(prev => {
+      if (prev && prev.current === current && prev.total === total) return prev;
+      return { current, total };
+    });
+  }, []);
+
   return (
     <div className="app-container w-screen h-screen">
       {/* Top Navbar (Hidden on Intro Phase as requested) */}
@@ -109,7 +116,7 @@ export function App() {
         {phase === 'story' && (
           <StoryPhase
             muted={muted}
-            onSlideChange={(current, total) => setStorySlideInfo({ current, total })}
+            onSlideChange={handleStorySlideChange}
             onDone={() => {
               setStorySlideInfo(null);
               setPhase('simulate');
