@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "slides": "node scripts/generate_anime_slides.js",
     "audio": "node scripts/generate_audio.js",
     "audio:force": "node scripts/generate_audio.js --force",
     "audio:clean": "node scripts/clean_audio.js"
